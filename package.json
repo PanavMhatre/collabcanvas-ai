@@ -1,0 +1,21 @@
+{
+  "name": "collabcanvas-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A multiplayer collaborative whiteboard (FigJam-style) with CRDT-based sync and an AI diagram copilot.",
+  "workspaces": [
+    "web",
+    "server",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "concurrently -n server,web -c yellow,cyan \"npm run dev -w server\" \"npm run dev -w web\"",
+    "dev:naive": "concurrently -n server,web -c yellow,cyan \"npm run dev:naive -w server\" \"npm run dev -w web\"",
+    "build": "npm run build -w web",
+    "test": "npm run test -w server",
+    "bench": "npm run bench -w server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

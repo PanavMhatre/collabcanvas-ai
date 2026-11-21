@@ -1,0 +1,16 @@
+node_modules/
+.DS_Store
+*.log
+
+# per-workspace build output
+web/.next/
+web/next-env.d.ts
+server/dist/
+
+# the sync server's LevelDB operation log + snapshots (local dev state only)
+server/data/
+
+# env files (each workspace's own .gitignore also opts specific examples back in)
+.env
+.env.local
+.env.*.local
