@@ -130,11 +130,11 @@ export default function Canvas({ handleRef, shapes, presence, tool, onToolUsed }
     drawGrid(ctx, camera, size.width, size.height);
     for (const shape of shapes) {
       const isSelected = selectedIds.includes(shape.id);
-      drawShape(ctx, shape, camera, shapeMap, isSelected ? "#3b82f6" : undefined);
+      drawShape(ctx, shape, camera, shapeMap, isSelected ? "#0d99ff" : undefined);
     }
     for (const id of selectedIds) {
       const shape = shapeMap.get(id);
-      if (shape && shape.type !== "arrow") drawSelection(ctx, boundsOf(shape), camera, "#3b82f6");
+      if (shape && shape.type !== "arrow") drawSelection(ctx, boundsOf(shape), camera, "#0d99ff");
     }
 
     const drag = dragRef.current;
@@ -148,7 +148,7 @@ export default function Canvas({ handleRef, shapes, presence, tool, onToolUsed }
       if (user.selection && user.selection.length > 0) {
         for (const id of user.selection) {
           const shape = shapeMap.get(id);
-          if (shape && shape.type !== "arrow") drawSelection(ctx, boundsOf(shape), camera, user.color);
+          if (shape && shape.type !== "arrow") drawSelection(ctx, boundsOf(shape), camera, user.color, false);
         }
       }
       if (user.cursor) {
@@ -435,7 +435,7 @@ function TextEditOverlay({
           (e.target as HTMLTextAreaElement).blur();
         }
       }}
-      className="absolute resize-none rounded border-2 border-blue-500 bg-white/95 p-2 outline-none"
+      className="absolute resize-none rounded-sm border-2 border-[#0d99ff] bg-white/95 p-2 outline-none"
       style={{
         left: topLeft.x,
         top: topLeft.y,

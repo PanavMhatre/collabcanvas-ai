@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import AIBar from "@/components/AIBar";
 import Canvas, { type Tool } from "@/components/Canvas";
+import FloatingToolbar from "@/components/FloatingToolbar";
 import Toolbar from "@/components/Toolbar";
 import { useRoom, type LocalUser } from "@/hooks/useRoom";
 
@@ -54,7 +56,7 @@ function mintIdentity(): { name: string; color: string } {
 
 const KEY_TO_TOOL: Record<string, Tool> = {
   v: "select",
-  p: "pan",
+  h: "pan",
   r: "rect",
   o: "ellipse",
   d: "diamond",
@@ -101,17 +103,11 @@ export default function Page() {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      <Toolbar
-        tool={tool}
-        onToolChange={setTool}
-        status={status}
-        shapes={shapes}
-        handleRef={handleRef}
-        userName={user.name}
-        peerCount={presence.length}
-      />
-      <div className="relative flex-1">
+      <Toolbar status={status} presence={presence} userName={user.name} userColor={user.color} />
+      <div className="relative flex-1 bg-[#f5f5f5]">
         <Canvas handleRef={handleRef} shapes={shapes} presence={presence} tool={tool} onToolUsed={() => setTool("select")} />
+        <AIBar shapes={shapes} handleRef={handleRef} userName={user.name} />
+        <FloatingToolbar tool={tool} onToolChange={setTool} />
       </div>
     </div>
   );

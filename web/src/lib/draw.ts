@@ -3,7 +3,7 @@ import { attachPoint, boundsOf, handlePositions, worldToScreen, type Box, type C
 
 export function drawGrid(ctx: CanvasRenderingContext2D, camera: Camera, width: number, height: number): void {
   ctx.save();
-  ctx.fillStyle = "#f8fafc";
+  ctx.fillStyle = "#f5f5f5";
   ctx.fillRect(0, 0, width, height);
 
   const spacing = pickGridSpacing(camera.zoom);
@@ -12,7 +12,7 @@ export function drawGrid(ctx: CanvasRenderingContext2D, camera: Camera, width: n
   const endX = camera.x + width / camera.zoom;
   const endY = camera.y + height / camera.zoom;
 
-  ctx.fillStyle = "#cbd5e1";
+  ctx.fillStyle = "#d9d9d9";
   for (let wx = startX; wx <= endX; wx += spacing) {
     for (let wy = startY; wy <= endY; wy += spacing) {
       const p = worldToScreen(camera, wx, wy);
@@ -58,9 +58,15 @@ export function drawShape(
     return;
   }
 
+  if (shape.type === "sticky") {
+    ctx.shadowColor = "rgba(0, 0, 0, 0.16)";
+    ctx.shadowBlur = 10 * camera.zoom;
+    ctx.shadowOffsetY = 3 * camera.zoom;
+  }
+
   ctx.fillStyle = shape.fill;
   ctx.strokeStyle = highlight ?? shape.stroke;
-  ctx.lineWidth = highlight ? 2.5 : 1.5;
+  ctx.lineWidth = highlight ? 2 : 1;
 
   ctx.beginPath();
   if (shape.type === "ellipse") {
@@ -72,14 +78,15 @@ export function drawShape(
     ctx.lineTo(topLeft.x, topLeft.y + h / 2);
     ctx.closePath();
   } else {
-    const radius = shape.type === "sticky" ? 4 : 6;
+    const radius = shape.type === "sticky" ? 2 : 4;
     roundedRect(ctx, topLeft.x, topLeft.y, w, h, radius);
   }
   ctx.fill();
+  ctx.shadowColor = "transparent";
   ctx.stroke();
 
   if (shape.text) {
-    ctx.fillStyle = "#0f172a";
+    ctx.fillStyle = "#1e1e1e";
     ctx.font = `${13 * camera.zoom}px Inter, system-ui, sans-serif`;
     ctx.textBaseline = "top";
     wrapText(ctx, shape.text, topLeft.x + 8 * camera.zoom, topLeft.y + 8 * camera.zoom, w - 16 * camera.zoom, 16 * camera.zoom);
@@ -148,33 +155,40 @@ function resolveEndpoint(
   return attachPoint(boundsOf(target), towards.x, towards.y);
 }
 
-export function drawSelection(ctx: CanvasRenderingContext2D, box: Box, camera: Camera, color: string): void {
+export function drawSelection(
+  ctx: CanvasRenderingContext2D,
+  box: Box,
+  camera: Camera,
+  color: string,
+  showHandles = true,
+): void {
   const topLeft = worldToScreen(camera, box.x, box.y);
   const w = box.w * camera.zoom;
   const h = box.h * camera.zoom;
   ctx.save();
   ctx.strokeStyle = color;
   ctx.lineWidth = 1.5;
-  ctx.setLineDash([5, 4]);
-  ctx.strokeRect(topLeft.x - 3, topLeft.y - 3, w + 6, h + 6);
-  ctx.setLineDash([]);
+  ctx.strokeRect(topLeft.x, topLeft.y, w, h);
 
-  ctx.fillStyle = "#ffffff";
-  const handles = handlePositions(box);
-  for (const key of Object.keys(handles) as (keyof typeof handles)[]) {
-    const p = worldToScreen(camera, handles[key].x, handles[key].y);
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
+  if (showHandles) {
+    const handleSize = 7;
+    ctx.fillStyle = "#ffffff";
+    const handles = handlePositions(box);
+    for (const key of Object.keys(handles) as (keyof typeof handles)[]) {
+      const p = worldToScreen(camera, handles[key].x, handles[key].y);
+      ctx.beginPath();
+      ctx.rect(p.x - handleSize / 2, p.y - handleSize / 2, handleSize, handleSize);
+      ctx.fill();
+      ctx.stroke();
+    }
   }
   ctx.restore();
 }
 
 export function drawMarquee(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number): void {
   ctx.save();
-  ctx.fillStyle = "rgba(59, 130, 246, 0.1)";
-  ctx.strokeStyle = "#3b82f6";
+  ctx.fillStyle = "rgba(13, 153, 255, 0.08)";
+  ctx.strokeStyle = "#0d99ff";
   ctx.lineWidth = 1;
   ctx.fillRect(x, y, w, h);
   ctx.strokeRect(x, y, w, h);
@@ -184,7 +198,7 @@ export function drawMarquee(ctx: CanvasRenderingContext2D, x: number, y: number,
 export function drawCursor(ctx: CanvasRenderingContext2D, screenX: number, screenY: number, color: string, name: string): void {
   ctx.save();
   ctx.translate(screenX, screenY);
-  ctx.fillStyle = color;
+
   ctx.beginPath();
   ctx.moveTo(0, 0);
   ctx.lineTo(0, 16);
@@ -194,9 +208,13 @@ export function drawCursor(ctx: CanvasRenderingContext2D, screenX: number, scree
   ctx.lineTo(7, 11.5);
   ctx.lineTo(13, 11.5);
   ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
   ctx.fill();
 
-  ctx.font = "12px Inter, system-ui, sans-serif";
+  ctx.font = "500 12px Inter, system-ui, sans-serif";
   const textWidth = ctx.measureText(name).width;
   ctx.fillStyle = color;
   roundedRect(ctx, 14, 2, textWidth + 12, 18, 4);

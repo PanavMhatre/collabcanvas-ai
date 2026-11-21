@@ -66,10 +66,10 @@ export interface DiagramSpec {
 }
 
 export const PALETTE = {
-  rect: { fill: "#E0E7FF", stroke: "#4338CA" },
-  ellipse: { fill: "#DBEAFE", stroke: "#1D4ED8" },
-  diamond: { fill: "#FEF3C7", stroke: "#B45309" },
-  sticky: { fill: "#FEF08A", stroke: "#CA8A04" },
-  arrow: { stroke: "#334155" },
-  text: { color: "#0F172A" },
+  rect: { fill: "#E8F4FF", stroke: "#0D99FF" },
+  ellipse: { fill: "#FFE5EC", stroke: "#FF4D6D" },
+  diamond: { fill: "#FFF4CC", stroke: "#FFB800" },
+  sticky: { fill: "#FFF9B1", stroke: "#F2C94C" },
+  arrow: { stroke: "#1E1E1E" },
+  text: { color: "#1E1E1E" },
 } as const;
