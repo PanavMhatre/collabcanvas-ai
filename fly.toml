@@ -1,0 +1,26 @@
+# Deploys the sync server (server/) as a small long-running Node process on
+# Fly -- this is the piece Vercel's serverless model can't host: a
+# persistent WebSocket connection pool plus a LevelDB operation log on a
+# real disk. Build context is the repo root (see Dockerfile path below)
+# because the server depends on the sibling `shared` workspace package.
+app = "collabcanvas-ai-sync"
+primary_region = "iad"
+
+[build]
+  dockerfile = "server/Dockerfile"
+
+[[mounts]]
+  source = "collabcanvas_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 1234
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  memory = "256mb"
+  cpu_kind = "shared"
+  cpus = 1
